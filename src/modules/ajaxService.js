@@ -6,10 +6,10 @@ const ajaxService = (query) => {
     type: 'type',
     page: 'page',
   };
-  const envStatus = process.env.STATUS;
-  const apiKey = process.env.API_KEY;
+  const envStatus = process.env.MIX_STATUS;
+  const apiKey = process.env.MIX_API_KEY;
   const baseUrl =
-    envStatus === 'dev' ? process.env.DUMMY_URL : 'http://www.omdbapi.com';
+    envStatus === 'dev' ? process.env.MIX_DUMMY_URL : 'http://www.omdbapi.com';
   let path = '';
   if (envStatus === 'dev') {
     // const key = `DUMMY_RES_${query['id'] ? 'I' : 'S'}_${query['page'] ?? '1'}`;
