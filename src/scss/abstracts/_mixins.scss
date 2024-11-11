@@ -1,0 +1,16 @@
+@mixin resetLinkStyle($foregroundColor: inherit) {
+  text-decoration: none;
+  color: $foregroundColor;
+  & a {
+    text-decoration: none;
+    color: $foregroundColor;
+  }
+}
+
+@mixin pillShape($padding: 0.25em) {
+  box-sizing: border-box;
+  line-height: 1;
+  padding-top: $padding;
+  padding-bottom: $padding;
+  border-radius: $padding + 0.5em;
+}
