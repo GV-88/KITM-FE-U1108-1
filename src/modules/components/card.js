@@ -1,6 +1,17 @@
 import utilities from '../../utilities';
+import storage from '../storage';
 
-const card = function (initialData, getDetailsFn) {
+// callback hell?
+const card = function (
+  initialData,
+  isFavorite,
+  behaviorType,
+  getDetailsFn,
+  onClickFn,
+  onFavoriteFn
+) {
+  let isFavoriteLocal = isFavorite ?? false;
+
   const typeIcons = {
     movie: 'fa-film',
     series: 'fa-tv',
@@ -38,10 +49,14 @@ const card = function (initialData, getDetailsFn) {
 
   const favElement = utilities.createElementExt(
     'i',
-    ['fav__icon', 'fa-regular', 'fa-star'],
+    [
+      'card__fav',
+      'fav__icon',
+      isFavoriteLocal ? 'fa-solid' : 'fa-regular',
+      'fa-star',
+    ],
     { 'data-id': initialData.imdbID }
   );
-  //TODO: add interactivity; change between 'fa-regular' and 'fa-solid' depending on storage
 
   const detailsElement = utilities.createElementExt('div', 'card__details', {
     'data-id': initialData.imdbID,
@@ -63,17 +78,81 @@ const card = function (initialData, getDetailsFn) {
     favElement
   );
 
-  const clickHandler = async (e) => {
+  const collapsePhase1 = async () => {
+    cardElement.classList.remove('card--expanded');
+    utilities.smoothRemove(
+      cardElement,
+      cardElement.querySelector('.card__collapse-button')
+    );
+    utilities.clearChildren(cardElement.querySelector('.card__details'));
+  };
+
+  const expand = () => {
+    cardElement.classList.add('card--expanded');
+    const collapseBtnElement = cardElement.appendChild(
+      utilities.createElementExt('i', [
+        'card__collapse-button',
+        'fa-solid',
+        'fa-xmark',
+      ])
+    );
+    collapseBtnElement.addEventListener('click', collapse, { once: true });
+  };
+
+  const collapse = async (e) => {
+    e.stopPropagation();
+    await collapsePhase1();
+    setTimeout(
+      cardElement.addEventListener('click', loadDetailsAndExpand, {
+        once: true,
+      }),
+      100
+    );
+  };
+
+  const loadDetailsAndExpand = async () => {
     cardElement.classList.add('card--busy');
     const detailsContent = await getDetailsFn(initialData.imdbID);
-    utilities.clearChildren(detailsElement);
-    detailsElement.append(detailsContent);
-    cardElement.classList.add('card--expanded');
-    cardElement.classList.remove('card--busy');
+    if (detailsContent instanceof Node) {
+      utilities.clearChildren(detailsElement);
+      detailsElement.append(detailsContent);
+      expand();
+      cardElement.classList.remove('card--busy');
+    } else {
+      setTimeout(() => {
+        cardElement.classList.remove('card--busy');
+      }, 1000);
+    }
   };
-  //TODO: interactivity to collapse back the expanded card
 
-  cardElement.addEventListener('click', clickHandler, { once: true });
+  favElement.addEventListener('click', async () => {
+    if (isFavoriteLocal) {
+      await storage.removeFromFavMovies(initialData.imdbID);
+      isFavoriteLocal = false;
+    } else {
+      await storage.addToFavMovies(initialData);
+      isFavoriteLocal = true;
+    }
+    utilities.toggleIconFill(favElement, isFavoriteLocal);
+
+    onFavoriteFn();
+  });
+
+  switch (behaviorType) {
+    case 'expand':
+      cardElement.addEventListener('click', loadDetailsAndExpand, {
+        once: true,
+      });
+      break;
+    case 'autoLoad':
+      loadDetailsAndExpand();
+      break;
+    case 'callback':
+      cardElement.addEventListener('click', onClickFn);
+      break;
+    default:
+      break;
+  }
 
   return cardElement;
 };

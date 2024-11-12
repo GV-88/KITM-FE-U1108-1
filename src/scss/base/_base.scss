@@ -3,10 +3,10 @@
 @import '~@fontsource/noto-sans';
 @import '~@fortawesome/fontawesome-free/scss/fontawesome';
 @import '~@fortawesome/fontawesome-free/scss/solid';
+@import '~@fortawesome/fontawesome-free/scss/regular';
 
 body {
   font-family: 'Noto Sans', sans-serif;
-  height: 100vh;
   background-color: var(--color-bg-3);
   color: var(--color-text-main);
 }

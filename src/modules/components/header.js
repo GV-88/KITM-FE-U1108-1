@@ -2,7 +2,7 @@ import utilities from '../../utilities';
 import button from './button';
 import searchForm from './searchForm';
 
-const header = function () {
+const header = async function () {
   const headerElement = utilities.createElementExt('header', 'header');
   const titleElement = headerElement
     .appendChild(
@@ -21,7 +21,7 @@ const header = function () {
         'header__block--search-form',
       ])
     )
-    .appendChild(searchForm());
+    .appendChild(await searchForm());
 
   const favButtonElement = headerElement
     .appendChild(
@@ -30,7 +30,8 @@ const header = function () {
         'header__block--extra-options',
       ])
     )
-    .appendChild(button('įsiminti', ['fa-solid', 'fa-star']));
+    .appendChild(button('įsiminti', ['fa-regular', 'fa-star']));
+  favButtonElement.classList.add('btn--toggle-sidebar');
 
   return headerElement;
 };

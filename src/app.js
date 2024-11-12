@@ -4,67 +4,142 @@ import header from './modules/components/header';
 import api from './modules/api';
 import storage from './modules/storage';
 import resultsList from './modules/resultsList';
+import searchDataList from './modules/components/searchDataList';
+import favoritesList from './modules/favoritesList';
 
-const buildInitContent = async () => {};
-const pageContainerElement = document.querySelector('body');
-const headerElement = pageContainerElement.appendChild(header());
-const containerElement = pageContainerElement.appendChild(
-  utilities.createElementExt('div', 'container')
-);
-const mainElement = containerElement.appendChild(
-  utilities.createElementExt('main')
-);
-const sidebarElement = containerElement.appendChild(
-  utilities.createElementExt('aside', ['sidebar', 'sidebar--favorites'])
-);
-mainElement.appendChild(contentPlaceholder('initial'));
+const buildInitContent = async () => {
+  let favoritesIdList = [];
 
-const formElement = headerElement.querySelector('#search-form'); //async???
-
-formElement.addEventListener('submit', (e) => {
-  e.preventDefault();
-  // formElement
-  //   .querySelectorAll('*[type="submit"]')
-  //   .forEach((element) => utilities.setDisabledAttribute(element, false));
-  utilities.setDisabledAttribute(
-    formElement.querySelector('*[type="submit"]'),
-    false
+  const pageContainerElement = document.querySelector('body');
+  const headerElement = pageContainerElement.appendChild(await header());
+  const containerElement = pageContainerElement.appendChild(
+    utilities.createElementExt('div', 'container')
   );
-  new FormData(formElement); //this constructor fires formdata event
-});
+  const mainElement = containerElement.appendChild(
+    utilities.createElementExt('main')
+  );
+  const sidebarElement = containerElement.appendChild(
+    utilities.createElementExt('aside', ['sidebar', 'sidebar--favorites'])
+  );
+  mainElement.appendChild(contentPlaceholder('initial'));
 
-formElement.addEventListener('formdata', async (e) => {
-  const query = {};
-  for (const pair of e.formData.entries()) {
-    if (pair[1]) {
-      query[pair[0]] = pair[1];
+  const makeArtificialResult = (itemData) => {
+    return {
+      Response: true,
+      totalResults: 1,
+      Search: [itemData],
+    };
+  };
+
+  const renderItemAsResult = (itemData) => {
+    if (itemData) {
+      utilities.clearChildren(mainElement);
+      mainElement.appendChild(
+        resultsList(
+          { id: itemData.imdbID },
+          makeArtificialResult(itemData),
+          favoritesIdList,
+          updateFavoritesFromStorage,
+          true
+        )
+      );
     }
-  }
-  if (query.searchstring) {
-    storage.addToLocalStorageList(
-      storage.movieSearchesListName,
-      query.searchstring
-    );
-  }
+  };
 
-  const response = await api.searchMovies(query);
-  // formElement
-  //   .querySelectorAll('*[type="submit"]')
-  //   .array.forEach((element) =>
-  //     utilities.setDisabledAttribute(element, true)
-  //   );
-  utilities.setDisabledAttribute(
-    formElement.querySelector('*[type="submit"]'),
-    true
-  );
-  utilities.clearChildren(mainElement);
-  if (response?.Response) {
-    mainElement.appendChild(resultsList(query, response));
-  } else {
-    mainElement.appendChild(
-      contentPlaceholder(
-        response?.Error === 'Movie not found!' ? 'searchResultEmpty' : 'other'
-      )
+  const updateFavoritesFromStorage = async () => {
+    if (containerElement.classList.contains('container--has-sidebar')) {
+      const favoritesData = await storage.getAllFavMovies();
+      utilities.clearChildren(sidebarElement);
+      if (favoritesData instanceof Array) {
+        // callback hell?
+        favoritesIdList = favoritesData.map((item) => item.imdbID);
+        sidebarElement.appendChild(
+          favoritesList(favoritesData, renderItemAsResult)
+        );
+      }
+    } else {
+      favoritesIdList = await storage.getFavMoviesList();
+    }
+  };
+
+  headerElement
+    .querySelector('.btn--toggle-sidebar')
+    .addEventListener('click', (e) => {
+      const hasSidebar = containerElement.classList.toggle(
+        'container--has-sidebar'
+      );
+      if (hasSidebar) {
+        updateFavoritesFromStorage();
+      } else {
+        utilities.clearChildren(sidebarElement);
+      }
+    });
+
+  const formElement = headerElement.querySelector('#search-form');
+
+  const updateSearchesFromStorage = async () => {
+    const pastSearches = await storage.getMovieSearches();
+    const dataListElement = searchDataList(pastSearches);
+    utilities.smoothRemove(
+      formElement,
+      formElement.querySelector('#datalist-searchstring')
     );
-  }
-});
+    dataListElement.id = 'datalist-searchstring';
+    formElement.appendChild(dataListElement);
+  };
+
+  updateFavoritesFromStorage();
+
+  updateSearchesFromStorage();
+
+  formElement.addEventListener('submit', (e) => {
+    e.preventDefault();
+    utilities.setDisabledAttribute(
+      e.target.querySelector('*[type="submit"]'),
+      false
+    );
+    new FormData(e.target); //this constructor fires formdata event
+  });
+
+  formElement.addEventListener('formdata', async (e) => {
+    const query = {};
+    for (const pair of e.formData.entries()) {
+      if (pair[1]) {
+        query[pair[0]] = pair[1];
+      }
+    }
+    if (query.searchstring) {
+      await storage.addToMovieSearches(query.searchstring);
+      updateSearchesFromStorage();
+
+      const response = await api.searchMovies(query);
+
+      utilities.clearChildren(mainElement);
+      if (response?.Response) {
+        mainElement.appendChild(
+          resultsList(
+            query,
+            response,
+            favoritesIdList,
+            updateFavoritesFromStorage
+          )
+        );
+      } else {
+        mainElement.appendChild(
+          contentPlaceholder(
+            response?.Error === 'Movie not found!'
+              ? 'searchResultEmpty'
+              : 'other'
+          )
+        );
+      }
+    }
+
+    utilities.setDisabledAttribute(
+      e.target.querySelector('*[type="submit"]'),
+      true
+    );
+  });
+};
+
+buildInitContent();

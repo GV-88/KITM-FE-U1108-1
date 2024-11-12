@@ -1,0 +1,46 @@
+body {
+  height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  & > .container {
+    height: 100%;
+    overflow-y: hidden;
+    $gap: 16px;
+    display: grid;
+    grid-template-columns: repeat(
+      auto-fill,
+      minmax(calc(var(--size-card-min-width) + $gap), auto)
+    );
+    &:not(&--has-sidebar) > main {
+      grid-column: 1 / -1;
+    }
+    &:not(&--has-sidebar) > .sidebar--favorites {
+      display: none;
+    }
+    &--has-sidebar > main {
+      grid-column: 1 / -2;
+    }
+    &--has-sidebar > .sidebar--favorites {
+      grid-column: -1 / -2;
+    }
+  }
+}
+
+body > .container > main,
+.sidebar--favorites {
+  overflow-y: auto;
+}
+.sidebar--favorites {
+  background-color: var(--color-bg-2);
+}
+
+.results__grid,
+.favorites__grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(var(--size-card-min-width), auto)
+  );
+  gap: 8px;
+  padding: 8px;
+}

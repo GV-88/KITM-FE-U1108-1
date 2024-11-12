@@ -7,10 +7,17 @@
   }
 }
 
+@mixin maxLines($lines) {
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+  overflow-y: hidden;
+}
+
 @mixin pillShape($padding: 0.25em) {
   box-sizing: border-box;
   line-height: 1;
   padding-top: $padding;
   padding-bottom: $padding;
-  border-radius: $padding + 0.5em;
+  border-radius: calc($padding + 0.5em);
 }

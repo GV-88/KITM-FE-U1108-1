@@ -1,5 +1,5 @@
 const storage = {
-  getListFromLocalStorage: function (key) {
+  getListFromLocalStorage: async function (key) {
     let values = localStorage.getItem(key);
     if (values === null) {
       values = [];
@@ -8,18 +8,30 @@ const storage = {
     }
     return values;
   },
-  addToLocalStorageList: function (key, val, maxCount) {
-    // "this" does not work with arrow functions
-    let valuesSet = new Set(this.getListFromLocalStorage(key));
-    if (maxCount && maxCount <= valuesSet.size) {
-      return -1;
+  /**
+   * For storing a list of primitive values; always refreshes newest and removes oldest if needed
+   * @param {string} key identifier for the whole list
+   * @param {*} val a unique primitive value to be added to the list
+   * @param {number} maxCount optional: how many values to keep in storage
+   * @returns removed values, if any
+   */
+  addToLocalStorageList: async function (key, val, maxCount) {
+    //assume the array sort order persists;
+    //always put newly accessed values at the end, remove oldest to keep maxCount
+    let removedValues = [];
+    let valuesArray = await this.getListFromLocalStorage(key);
+    valuesArray = valuesArray.filter((i) => i !== val);
+    valuesArray.push(val);
+    if (maxCount) {
+      while (valuesArray.length > maxCount) {
+        removedValues.push(valuesArray.shift());
+      }
     }
-    valuesSet.add(val);
-    localStorage.setItem(key, JSON.stringify(Array.from(valuesSet)));
-    return 1;
+    localStorage.setItem(key, JSON.stringify(valuesArray));
+    return removedValues;
   },
-  removeFromLocalStorageList: function (key, val) {
-    let valuesSet = new Set(this.getListFromLocalStorage(key));
+  removeFromLocalStorageList: async function (key, val) {
+    let valuesSet = new Set(await this.getListFromLocalStorage(key));
     valuesSet.delete(val);
     localStorage.setItem(key, JSON.stringify(Array.from(valuesSet)));
   },
@@ -27,7 +39,18 @@ const storage = {
   movieDetailsPrefix: 'OMDb_details_',
   movieFavoritesPrefix: 'OMDb_fav_',
   movieFavoritesListName: 'OMDb_fav',
+  movieSearchesMaxStorage: 30,
   movieFavoritesMaxStorage: 8,
+  getMovieSearches: async function () {
+    return this.getListFromLocalStorage(this.movieSearchesListName);
+  },
+  addToMovieSearches: function (val) {
+    this.addToLocalStorageList(
+      this.movieSearchesListName,
+      val,
+      this.movieSearchesMaxStorage
+    );
+  },
   getMovieDetails: async function (id) {
     let data = sessionStorage.getItem(this.movieDetailsPrefix + id);
     return data === null ? null : JSON.parse(data);
@@ -38,15 +61,15 @@ const storage = {
       JSON.stringify(data)
     );
   },
-  getFavMoviesList: function () {
+  getFavMoviesList: async function () {
     return this.getListFromLocalStorage(this.movieFavoritesListName);
   },
-  getAllFavMovies: function () {
+  getAllFavMovies: async function () {
     let values = [];
-    const ids = this.getFavMoviesList;
+    const ids = await this.getFavMoviesList();
     if (Array.isArray(ids)) {
       for (const id of ids) {
-        let data = sessionStorage.getItem(this.movieFavoritesPrefix + id);
+        let data = localStorage.getItem(this.movieFavoritesPrefix + id);
         if (data !== null) {
           values.push(JSON.parse(data));
         }
@@ -54,23 +77,21 @@ const storage = {
     }
     return values;
   },
-  addToFavMovies: function (data) {
-    if (
-      this.addToLocalStorageList(
-        this.movieFavoritesListName,
-        data.imdbID,
-        this.movieFavoritesMaxStorage
-      ) === 1
-    ) {
-      localStorage.setItem(
-        this.movieFavoritesPrefix + data.imdbID,
-        JSON.stringify(data)
-      );
-      return 1;
+  addToFavMovies: async function (data) {
+    const moviesToRemove = await this.addToLocalStorageList(
+      this.movieFavoritesListName,
+      data.imdbID,
+      this.movieFavoritesMaxStorage
+    );
+    for (id of moviesToRemove) {
+      localStorage.removeItem(this.movieFavoritesPrefix + id);
     }
-    return 0;
+    localStorage.setItem(
+      this.movieFavoritesPrefix + data.imdbID,
+      JSON.stringify(data)
+    );
   },
-  removeFromFavMovies: function (id) {
+  removeFromFavMovies: async function (id) {
     this.removeFromLocalStorageList(this.movieFavoritesListName, id);
     localStorage.removeItem(this.movieFavoritesPrefix + id);
   },

@@ -9,6 +9,7 @@ const button = function (text, iconDef) {
     buttonElement.appendChild(
       utilities.createElementExt('i', ['btn__icon'].concat(iconDef))
     );
+    buttonElement.classList.add('btn--icon');
   }
   if (text) {
     buttonElement.appendChild(

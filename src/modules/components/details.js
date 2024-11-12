@@ -26,9 +26,7 @@ const details = function (data) {
           {},
           fields[key].label
         ),
-        utilities.createElementExt('div', 'details__field-value'),
-        {},
-        data[key]
+        utilities.createElementExt('div', 'details__field-value', {}, data[key])
       );
       detailsElement.append(fieldElement);
     }

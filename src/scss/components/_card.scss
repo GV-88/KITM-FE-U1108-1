@@ -1,0 +1,74 @@
+@use '../abstracts' as *;
+
+.card--movie {
+  border-radius: 16px;
+  & .card {
+    &__fav,
+    &__collapse-button {
+      font-size: 20px;
+      line-height: 1;
+    }
+  }
+}
+
+.card--movie.card--expanded {
+  grid-column: 1 / -1;
+  padding: 1em;
+  background-color: var(--color-bg-1);
+  & .card {
+    &__picture {
+      float: inline-end;
+    }
+    &__title {
+      margin: 0 0.25em;
+    }
+  }
+  & .details {
+    &__field-label {
+      color: var(--color-text-label);
+    }
+  }
+}
+
+.card--movie:not(.card--expanded) {
+  grid-column: span 1;
+  width: 100%;
+  min-width: var(--size-card-min-width);
+  position: relative;
+  overflow: hidden;
+  & .card {
+    &__picture {
+      width: 100%;
+      object-fit: cover;
+      height: 100%;
+    }
+    &__content {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: auto;
+      padding: 8px;
+      display: flex;
+      flex-flow: row wrap;
+      gap: 8px;
+      background-color: var(--color-bg-neutral-transp);
+    }
+    &__title {
+      width: 100%;
+      @include maxLines(2);
+      margin: 0 0.25em;
+    }
+    &__details {
+      display: none;
+    }
+    &__fav {
+      position: absolute;
+      right: 8px;
+      bottom: 8px;
+    }
+    &__type .type__text {
+      display: none;
+    }
+  }
+}

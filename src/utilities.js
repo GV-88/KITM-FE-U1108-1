@@ -45,8 +45,16 @@ const utilities = {
   },
 
   smoothRemove: function (parent, child) {
-    if (parent && parent.contains(child)) {
+    if (parent && parent.contains(child ?? null)) {
       parent.removeChild(child);
+    }
+  },
+
+  toggleIconFill: function (element, condition) {
+    if (condition) {
+      element.classList.replace('fa-regular', 'fa-solid');
+    } else {
+      element.classList.replace('fa-solid', 'fa-regular');
     }
   },
 };

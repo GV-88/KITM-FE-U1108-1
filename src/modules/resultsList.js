@@ -4,7 +4,13 @@ import button from './components/button';
 import card from './components/card';
 import details from './components/details';
 
-const resultsList = function (query, resultData) {
+const resultsList = function (
+  query,
+  resultData,
+  favoritesIdList,
+  onFavoriteFn,
+  autoLoadDetails
+) {
   const state = { nextPage: 1, loadedCount: 0, totalCount: undefined };
   const resultsElement = utilities.createElementExt('div', 'results');
   const resultsGridElement = utilities.createElementExt('div', 'results__grid');
@@ -29,12 +35,20 @@ const resultsList = function (query, resultData) {
       state.loadedCount += response.Search.length;
       state.nextPage += 1;
       query.page = state.nextPage;
+
       for (const item of response.Search) {
         resultsGridElement.appendChild(
-          card(item, async (id) => {
-            const detailsData = await api.getSingleMovieDetails(id);
-            return details(detailsData);
-          })
+          card(
+            item,
+            favoritesIdList.includes(item.imdbID),
+            autoLoadDetails ? 'autoLoad' : 'expand',
+            async (id) => {
+              const detailsData = await api.getSingleMovieDetails(id);
+              return detailsData?.Response ? details(detailsData) : -1;
+            },
+            null,
+            onFavoriteFn
+          )
         );
       }
       pageInfoElement.innerText = `Rodoma ${state.loadedCount} iš ${state.totalCount} rezultatų`;

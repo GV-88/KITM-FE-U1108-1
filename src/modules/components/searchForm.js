@@ -1,8 +1,7 @@
 import utilities from '../../utilities';
-import storage from '../storage';
 import button from './button';
 
-const searchForm = function () {
+const searchForm = async function () {
   const formElement = utilities.createElementExt('form', 'search-form', {
     id: 'search-form',
   });
@@ -15,21 +14,11 @@ const searchForm = function () {
         name: 'searchstring',
         placeholder: 'pavadinimas',
         type: 'search',
-        list: 'datalist-searchstring',
+        required: '',
+        list: 'datalist-searchstring', //this id will be dynamically bound to datalist
       }
     )
   );
-  const dataListElement = formElement.appendChild(
-    utilities.createElementExt('datalist', [], { id: 'datalist-searchstring' })
-  );
-  const pastSearches = storage.getListFromLocalStorage(
-    storage.movieSearchesListName
-  );
-  for (const key in pastSearches) {
-    dataListElement.appendChild(
-      utilities.createElementExt('option', [], { value: pastSearches[key] })
-    );
-  }
   formElement.appendChild(
     utilities.createElementExt(
       'input',
@@ -57,7 +46,7 @@ const searchForm = function () {
       'option',
       'select-placeholder',
       { value: '', selected: '' },
-      'tipas'
+      '-tipas-'
     )
   );
   const typeOtions = { movie: 'filmas', series: 'serialas', episode: 'serija' };
