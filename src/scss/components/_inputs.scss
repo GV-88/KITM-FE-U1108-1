@@ -1,22 +1,46 @@
+@use 'sass:color';
 @use '../abstracts' as *;
+
+.btn.btn--icon-only {
+  padding: 0.5em;
+  & .btn--icon .btn__text {
+    display: none;
+  }
+}
 
 .btn {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.25em;
-  @include pillShape(8px);
-  padding-left: 8px;
-  padding-right: 8px;
+  @include pillShape(0.5em);
+  padding-left: 0.75em;
+  padding-right: 0.75em;
   border: none;
   color: var(--color-text-main);
   background-color: var(--color-bg-2);
   cursor: pointer;
-  &:hover {
+  transition: 200ms;
+  &:not(disabled):hover {
     color: var(--color-text-important);
     background-color: var(--color-bg-3);
   }
   &:active {
     background-color: var(--color-bg-highlight);
+  }
+  &:disabled {
+    opacity: 0.5;
+    filter: saturate(0.25);
+    cursor: default;
+  }
+  &--accent {
+    color: var(--color-text-accent);
+    background-color: var(--color-bg-accent);
+    &:not(disabled):hover {
+      background-color: modifyColorBrightness(var(--color-bg-accent), 0.9375);
+      @media (prefers-color-scheme: dark) {
+        background-color: modifyColorBrightness(var(--color-bg-accent), 1.0625);
+      }
+    }
   }
 }

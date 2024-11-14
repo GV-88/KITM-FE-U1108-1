@@ -21,6 +21,9 @@ const ajaxService = async (query) => {
   for (const key in query) {
     url.searchParams.append(queryParamsTranslation[key], query[key]);
   }
+  if (query['id']) {
+    url.searchParams.append('plot', 'full');
+  }
   try {
     const response = await fetch(url);
     if (

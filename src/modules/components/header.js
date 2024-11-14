@@ -12,7 +12,7 @@ const header = async function () {
       ])
     )
     .appendChild(utilities.createElementExt('h1', 'header__title'));
-  titleElement.innerHTML = `Filmų paieška (<a href="https://www.omdbapi.com/">OMDb API</a>)`;
+  titleElement.innerHTML = `Filmų paieška (<a href="https://www.omdbapi.com/" target="_blank">OMDb API</a>)`;
 
   const formElement = headerElement
     .appendChild(

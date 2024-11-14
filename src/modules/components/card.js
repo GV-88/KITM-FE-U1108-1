@@ -1,4 +1,5 @@
 import utilities from '../../utilities';
+import api from '../api';
 import storage from '../storage';
 
 // callback hell?
@@ -12,10 +13,12 @@ const card = function (
 ) {
   let isFavoriteLocal = isFavorite ?? false;
 
+  const typeOptions = api.typeOptions;
   const typeIcons = {
     movie: 'fa-film',
     series: 'fa-tv',
     episode: 'fa-list-ol',
+    game: 'fa-gamepad',
   };
 
   const pictureElement = utilities.createElementExt('img', 'card__picture', {
@@ -44,7 +47,12 @@ const card = function (
       'fa-solid',
       typeIcons[initialData['Type']],
     ]),
-    utilities.createElementExt('span', 'type__text', {}, initialData['Type'])
+    utilities.createElementExt(
+      'span',
+      'type__text',
+      {},
+      typeOptions[initialData['Type']] ?? initialData['Type']
+    )
   );
 
   const favElement = utilities.createElementExt(
@@ -66,6 +74,12 @@ const card = function (
 
   textContentElement.append(titleElement, yearElement, typeElement);
 
+  const interactiveIconsElement = utilities.createElementExt(
+    'div',
+    'card__interactive-icons'
+  );
+  interactiveIconsElement.append(favElement);
+
   const cardElement = utilities.createElementExt(
     'div',
     ['card', 'card--movie'],
@@ -75,25 +89,26 @@ const card = function (
     pictureElement,
     textContentElement,
     detailsElement,
-    favElement
+    interactiveIconsElement
   );
 
   const collapsePhase1 = async () => {
     cardElement.classList.remove('card--expanded');
     utilities.smoothRemove(
-      cardElement,
-      cardElement.querySelector('.card__collapse-button')
+      interactiveIconsElement,
+      interactiveIconsElement.querySelector('.card__collapse-button')
     );
     utilities.clearChildren(cardElement.querySelector('.card__details'));
   };
 
   const expand = () => {
     cardElement.classList.add('card--expanded');
-    const collapseBtnElement = cardElement.appendChild(
+    const collapseBtnElement = interactiveIconsElement.appendChild(
       utilities.createElementExt('i', [
         'card__collapse-button',
         'fa-solid',
-        'fa-xmark',
+        // 'fa-xmark',
+        'fa-down-left-and-up-right-to-center',
       ])
     );
     collapseBtnElement.addEventListener('click', collapse, { once: true });
@@ -125,7 +140,8 @@ const card = function (
     }
   };
 
-  favElement.addEventListener('click', async () => {
+  favElement.addEventListener('click', async (e) => {
+    e.stopPropagation();
     if (isFavoriteLocal) {
       await storage.removeFromFavMovies(initialData.imdbID);
       isFavoriteLocal = false;

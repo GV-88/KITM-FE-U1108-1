@@ -17,14 +17,14 @@ const storage = {
    */
   addToLocalStorageList: async function (key, val, maxCount) {
     //assume the array sort order persists;
-    //always put newly accessed values at the end, remove oldest to keep maxCount
+    //always put newly accessed values at the front, remove oldest to keep maxCount
     let removedValues = [];
     let valuesArray = await this.getListFromLocalStorage(key);
     valuesArray = valuesArray.filter((i) => i !== val);
-    valuesArray.push(val);
+    valuesArray.unshift(val);
     if (maxCount) {
       while (valuesArray.length > maxCount) {
-        removedValues.push(valuesArray.shift());
+        removedValues.push(valuesArray.pop());
       }
     }
     localStorage.setItem(key, JSON.stringify(valuesArray));
@@ -40,7 +40,7 @@ const storage = {
   movieFavoritesPrefix: 'OMDb_fav_',
   movieFavoritesListName: 'OMDb_fav',
   movieSearchesMaxStorage: 30,
-  movieFavoritesMaxStorage: 8,
+  movieFavoritesMaxStorage: 20,
   getMovieSearches: async function () {
     return this.getListFromLocalStorage(this.movieSearchesListName);
   },
@@ -50,6 +50,9 @@ const storage = {
       val,
       this.movieSearchesMaxStorage
     );
+  },
+  clearSearchHistory: function () {
+    localStorage.removeItem(this.movieSearchesListName);
   },
   getMovieDetails: async function (id) {
     let data = sessionStorage.getItem(this.movieDetailsPrefix + id);

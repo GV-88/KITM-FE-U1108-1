@@ -12,6 +12,7 @@ const buildInitContent = async () => {
 
   const pageContainerElement = document.querySelector('body');
   const headerElement = pageContainerElement.appendChild(await header());
+  const formElement = headerElement.querySelector('#search-form');
   const containerElement = pageContainerElement.appendChild(
     utilities.createElementExt('div', 'container')
   );
@@ -54,28 +55,21 @@ const buildInitContent = async () => {
         // callback hell?
         favoritesIdList = favoritesData.map((item) => item.imdbID);
         sidebarElement.appendChild(
-          favoritesList(favoritesData, renderItemAsResult)
+          favoritesList(
+            favoritesData,
+            renderItemAsResult,
+            updateFavoritesFromStorage
+          )
         );
       }
     } else {
       favoritesIdList = await storage.getFavMoviesList();
     }
+    utilities.toggleIconFill(
+      headerElement.querySelector('.btn--toggle-sidebar .btn__icon'),
+      favoritesIdList.length > 0
+    );
   };
-
-  headerElement
-    .querySelector('.btn--toggle-sidebar')
-    .addEventListener('click', (e) => {
-      const hasSidebar = containerElement.classList.toggle(
-        'container--has-sidebar'
-      );
-      if (hasSidebar) {
-        updateFavoritesFromStorage();
-      } else {
-        utilities.clearChildren(sidebarElement);
-      }
-    });
-
-  const formElement = headerElement.querySelector('#search-form');
 
   const updateSearchesFromStorage = async () => {
     const pastSearches = await storage.getMovieSearches();
@@ -87,6 +81,56 @@ const buildInitContent = async () => {
     dataListElement.id = 'datalist-searchstring';
     formElement.appendChild(dataListElement);
   };
+
+  const animateSidebar = async (hasSidebar) => {
+    const duration = 250;
+    // sidebarElement.style.transition = `${duration}ms`;
+    sidebarElement.classList.add(
+      `sidebar--transitioning-${hasSidebar ? 'collapsed' : 'expanded'}`
+    );
+    setTimeout(() => {
+      sidebarElement.classList.replace(
+        `sidebar--transitioning-${hasSidebar ? 'collapsed' : 'expanded'}`,
+        `sidebar--transitioning-${hasSidebar ? 'expanded' : 'collapsed'}`
+      );
+    }, 20);
+    setTimeout(() => {
+      sidebarElement.classList.remove(
+        `sidebar--transitioning-collapsed`,
+        `sidebar--transitioning-expanded`
+      );
+    }, 20 + duration);
+  };
+
+  headerElement
+    .querySelector('.btn--toggle-sidebar')
+    .addEventListener('click', (e) => {
+      const hasSidebar = containerElement.classList.toggle(
+        'container--has-sidebar'
+      );
+      // animateSidebar(hasSidebar);
+      if (hasSidebar) {
+        updateFavoritesFromStorage();
+      } else {
+        utilities.clearChildren(sidebarElement);
+      }
+    });
+
+  headerElement.addEventListener('click', () => {
+    headerElement.classList.remove('header--minimized');
+  });
+
+  mainElement.addEventListener('click', () => {
+    headerElement.classList.add('header--minimized');
+  });
+
+  mainElement.addEventListener('click', () => {
+    headerElement.classList.add('header--minimized');
+  });
+
+  mainElement.addEventListener('scroll', () => {
+    headerElement.classList.add('header--minimized');
+  });
 
   updateFavoritesFromStorage();
 
@@ -115,7 +159,7 @@ const buildInitContent = async () => {
       const response = await api.searchMovies(query);
 
       utilities.clearChildren(mainElement);
-      if (response?.Response) {
+      if (response?.Response === 'True') {
         mainElement.appendChild(
           resultsList(
             query,
@@ -124,6 +168,7 @@ const buildInitContent = async () => {
             updateFavoritesFromStorage
           )
         );
+        headerElement.classList.add('header--minimized');
       } else {
         mainElement.appendChild(
           contentPlaceholder(
@@ -140,6 +185,8 @@ const buildInitContent = async () => {
       true
     );
   });
+
+  formElement.querySelector('.search-form__input--searchstring').focus();
 };
 
 buildInitContent();

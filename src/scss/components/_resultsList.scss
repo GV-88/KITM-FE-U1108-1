@@ -1,0 +1,13 @@
+.results {
+  &__page-summary {
+    margin: 1em;
+    display: flex;
+    flex-flow: row-wrap;
+    align-items: center;
+    gap: 2em;
+  }
+  &__button {
+    // @extend .btn--accent;
+    font-size: 1em;
+  }
+}

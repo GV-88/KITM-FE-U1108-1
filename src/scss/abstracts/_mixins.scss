@@ -14,10 +14,30 @@
   overflow-y: hidden;
 }
 
+@mixin flexReverseWrap($maxItems) {
+  display: flex;
+  flex-flow: row-reverse wrap-reverse;
+  @for $i from 1 through $maxItems {
+    & > *:nth-last-child(#{$i}) {
+      order: $i;
+    }
+  }
+}
+
 @mixin pillShape($padding: 0.25em) {
   box-sizing: border-box;
+  min-height: calc($padding * 2 + 1em);
   line-height: 1;
   padding-top: $padding;
   padding-bottom: $padding;
+  border-radius: calc($padding + 0.5em);
+}
+
+@mixin pillShapeFullHeight($padding: 0.25em) {
+  box-sizing: border-box;
+  min-height: calc($padding * 2 + 1em);
+  line-height: calc($padding * 2 + 1em);
+  padding-top: 0;
+  padding-bottom: 0;
   border-radius: calc($padding + 0.5em);
 }

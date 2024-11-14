@@ -1,5 +1,3 @@
-// $fa-font-path: '~@fortawesome/fontawesome-free/webfonts';
-
 $sizeBreakpointSm: 576px;
 $sizeBreakpointMd: 768px;
 $sizeBreakpointLg: 992px;
@@ -15,9 +13,10 @@ $sizeBreakpointXl: 1200px;
   --color-bg-1: #eee;
   --color-bg-2: #ddd;
   --color-bg-3: #ccc;
+  --color-bg-accent: #bce0ed;
   --color-bg-neutral: #999;
-  --color-bg-neutral-transp: #999a;
-  --color-bg-highlight: #fec;
+  --color-bg-neutral-transp: #999b;
+  --color-bg-highlight: #cce3ed;
   --size-factor-font-main: 1;
   --size-factor-font-heading: 1;
   --size-factor-font-label: 1;
@@ -29,14 +28,14 @@ $sizeBreakpointXl: 1200px;
     --color-text-secondary: #ccc;
     --color-text-label: #aaa;
     --color-text-accent: #8df;
-    --color-text-highlight: #fd8;
     --color-bg-0: #444;
     --color-bg-1: #333;
     --color-bg-2: #111;
     --color-bg-3: #000;
+    --color-bg-accent: #134;
     --color-bg-neutral: #666;
-    --color-bg-neutral-transp: #666a;
-    --color-bg-highlight: #755;
+    --color-bg-neutral-transp: #666b;
+    --color-bg-highlight: #467;
   }
   @media (min-width: $sizeBreakpointSm) {
     --size-factor-font-label: 0.9375;
@@ -57,6 +56,12 @@ $sizeBreakpointXl: 1200px;
     --size-factor-font-label: 1;
     --size-factor-spacing: 2;
   }
+}
+
+@function modifyColorBrightness($base, $modifier) {
+  @return rgb(
+    from $base calc(r * $modifier) calc(g * $modifier) calc(b * $modifier)
+  );
 }
 
 @function responsiveFontSizeMain($base) {

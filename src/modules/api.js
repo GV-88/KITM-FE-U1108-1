@@ -15,6 +15,12 @@ const api = {
     }
     return data;
   },
+  typeOptions: {
+    movie: 'filmas',
+    series: 'serialas',
+    episode: 'serija',
+    game: 'žaidimas',
+  },
 };
 
 export default api;

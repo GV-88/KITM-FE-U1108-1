@@ -25,7 +25,8 @@ const resultsList = function (
   const loadMoreButtonElement = button('Daugiau!');
   loadMoreButtonElement.classList.add(
     'results__button',
-    'results__button--more'
+    'results__button--more',
+    'btn--accent'
   );
   pageSummaryElement.append(pageInfoElement, loadMoreButtonElement);
   resultsElement.append(resultsGridElement, pageSummaryElement);
@@ -56,12 +57,21 @@ const resultsList = function (
         loadMoreButtonElement,
         state.loadedCount < state.totalCount
       );
+      utilities.toggleClassByCondition(
+        loadMoreButtonElement,
+        'hidden',
+        state.loadedCount < state.totalCount
+      );
     }
   };
 
   appendResults(resultData);
-  loadMoreButtonElement.addEventListener('click', async () => {
+  loadMoreButtonElement.addEventListener('click', async (e) => {
+    e.currentTarget.disabled = true;
     const response = await api.searchMovies(query);
+    if (e.currentTarget?.disabled) {
+      e.currentTarget.disabled = false;
+    }
     appendResults(response);
   });
 
