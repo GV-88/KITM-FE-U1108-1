@@ -8,3 +8,4 @@ public/test_data
 *.sass.map
 *.scss.map
 public/mix-manifest.json
+public

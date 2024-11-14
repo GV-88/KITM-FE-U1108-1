@@ -7,6 +7,7 @@ body {
   transition: 200ms;
   & > .container {
     height: 100%;
+    grid-row: 2;
     overflow-y: hidden;
     $gap: 12px;
     display: grid;

@@ -2,7 +2,7 @@
 
 Front-end vartotojo sąsaja, dirbanti su duomenimis iš [OMDb API](https://www.omdbapi.com/).
 
-Technologijos: ES6, webpack, Laravel Mix, Sass, Font Awesome, Google Fonts
+Technologijos: ES6, webpack, Laravel Mix, Sass, Font Awesome, Fontsource
 
 ## Vartotojo aplinka, funkcionalumas
 
@@ -20,6 +20,8 @@ _Local storage_ taip pat saugoma paieškos istorija, kuri naudojama _auto comple
 - `$ npx mix`
 
 Reikia hostinti direktoriją "public", kitaip neužkrauna lokalių fontų. Tai galima padaryti naudojant VSCode papildinį Live Server su nustatymu `"liveServer.settings.root": "/public/"`
+
+Šita problema lieka neišspręsta. Naudojami npm fonts paketai, kurie importuojami per Sass, webpack Sass loader _BEVEIK teisingai_ sugaudo galutinį @font-face url, deja ne iki galo, ir kol kas nerandu sprendimo.
 
 ### .env failas
 
