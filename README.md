@@ -32,6 +32,10 @@ MIX_API_KEY reikalingas išoriniam API
 
 MIX_STATUS=dev vietoje išorinio API naudoja lokalius testinius placeholder JSON failus su specifine failų pavadinimų sistema...
 
+### API key
+
+Testavimui yra galimybė naudoti savo API key iš kliento pusės, tam užtenka browser local storage pridėti įrašą "OMDb_apikey".
+
 #### Testiniai duomenų failai
 
 - /public/test_data/response_sample_s_1.json

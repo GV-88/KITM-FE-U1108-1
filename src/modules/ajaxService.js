@@ -7,7 +7,7 @@ const ajaxService = async (query) => {
     page: 'page',
   };
   const envStatus = process.env.MIX_STATUS;
-  const apiKey = process.env.MIX_API_KEY;
+  const apiKey = localStorage.getItem('OMDb_apikey') ?? process.env.MIX_API_KEY;
   const baseUrl =
     envStatus === 'dev' ? 'http://localhost' : 'http://www.omdbapi.com';
   let url = new URL(baseUrl);

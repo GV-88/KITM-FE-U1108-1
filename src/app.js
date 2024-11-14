@@ -138,10 +138,7 @@ const buildInitContent = async () => {
 
   formElement.addEventListener('submit', (e) => {
     e.preventDefault();
-    utilities.setDisabledAttribute(
-      e.target.querySelector('*[type="submit"]'),
-      false
-    );
+    e.target.querySelector('*[type="submit"]').disabled = true;
     new FormData(e.target); //this constructor fires formdata event
   });
 
@@ -180,10 +177,9 @@ const buildInitContent = async () => {
       }
     }
 
-    utilities.setDisabledAttribute(
-      e.target.querySelector('*[type="submit"]'),
-      true
-    );
+    setTimeout(() => {
+      e.target.querySelector('*[type="submit"]').disabled = false;
+    }, 1000);
   });
 
   formElement.querySelector('.search-form__input--searchstring').focus();
