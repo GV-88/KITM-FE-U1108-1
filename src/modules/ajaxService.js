@@ -9,7 +9,7 @@ const ajaxService = async (query) => {
   const envStatus = process.env.MIX_STATUS;
   const apiKey = localStorage.getItem('OMDb_apikey') ?? process.env.MIX_API_KEY;
   const baseUrl =
-    envStatus === 'dev' ? 'http://localhost' : 'http://www.omdbapi.com';
+    envStatus === 'dev' ? 'http://localhost' : 'https://www.omdbapi.com';
   let url = new URL(baseUrl);
   if (envStatus === 'dev') {
     url.port = window.location.port;

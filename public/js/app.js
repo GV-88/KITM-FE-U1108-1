@@ -283,7 +283,7 @@ var ajaxService = /*#__PURE__*/function () {
           };
           envStatus = process.env.MIX_STATUS;
           apiKey = (_localStorage$getItem = localStorage.getItem('OMDb_apikey')) !== null && _localStorage$getItem !== void 0 ? _localStorage$getItem : process.env.MIX_API_KEY;
-          baseUrl = envStatus === 'dev' ? 'http://localhost' : 'http://www.omdbapi.com';
+          baseUrl = envStatus === 'dev' ? 'http://localhost' : 'https://www.omdbapi.com';
           url = new URL(baseUrl);
           if (envStatus === 'dev') {
             url.port = window.location.port;
