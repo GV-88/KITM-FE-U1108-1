@@ -534,6 +534,7 @@ var card = function card(initialData, isFavorite, behaviorType, getDetailsFn, on
     var collapseBtnElement = interactiveIconsElement.appendChild(_utilities__WEBPACK_IMPORTED_MODULE_0__["default"].createElementExt('i', ['card__collapse-button', 'fa-solid',
     // 'fa-xmark',
     'fa-down-left-and-up-right-to-center']));
+    _utilities__WEBPACK_IMPORTED_MODULE_0__["default"].scrollIntoViewIfNeeded(cardElement);
     collapseBtnElement.addEventListener('click', collapse, {
       once: true
     });
@@ -1441,6 +1442,16 @@ var utilities = {
       element.classList.replace('fa-regular', 'fa-solid');
     } else {
       element.classList.replace('fa-solid', 'fa-regular');
+    }
+  },
+  /**
+   * a primitive implementation of non-standard https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoViewIfNeeded
+   * @param {*} element
+   */
+  scrollIntoViewIfNeeded: function scrollIntoViewIfNeeded(element) {
+    var viewport = window.visualViewport;
+    if (element.getBoundingClientRect()['bottom'] > viewport.offsetTop + viewport.height) {
+      element.scrollIntoView(false);
     }
   }
 };

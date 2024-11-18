@@ -3,14 +3,7 @@ import api from '../api';
 import storage from '../storage';
 
 // callback hell?
-const card = function (
-  initialData,
-  isFavorite,
-  behaviorType,
-  getDetailsFn,
-  onClickFn,
-  onFavoriteFn
-) {
+const card = function (initialData, isFavorite, behaviorType, getDetailsFn, onClickFn, onFavoriteFn) {
   let isFavoriteLocal = isFavorite ?? false;
 
   const typeOptions = api.typeOptions;
@@ -25,46 +18,18 @@ const card = function (
     src: initialData.Poster,
     title: initialData.Title,
   });
-  const titleElement = utilities.createElementExt(
-    'h3',
-    'card__title',
-    { title: initialData.Title },
-    initialData.Title
-  );
-  const yearElement = utilities.createElementExt(
-    'div',
-    'card__year',
-    { title: `Metai: ${initialData.Year}` },
-    initialData.Year
-  );
+  const titleElement = utilities.createElementExt('h3', 'card__title', { title: initialData.Title }, initialData.Title);
+  const yearElement = utilities.createElementExt('div', 'card__year', { title: `Metai: ${initialData.Year}` }, initialData.Year);
 
   const typeElement = utilities.createElementExt('div', 'card__type', {
     title: initialData['Type'],
   });
   typeElement.append(
-    utilities.createElementExt('i', [
-      'type__icon',
-      'fa-solid',
-      typeIcons[initialData['Type']],
-    ]),
-    utilities.createElementExt(
-      'span',
-      'type__text',
-      {},
-      typeOptions[initialData['Type']] ?? initialData['Type']
-    )
+    utilities.createElementExt('i', ['type__icon', 'fa-solid', typeIcons[initialData['Type']]]),
+    utilities.createElementExt('span', 'type__text', {}, typeOptions[initialData['Type']] ?? initialData['Type'])
   );
 
-  const favElement = utilities.createElementExt(
-    'i',
-    [
-      'card__fav',
-      'fav__icon',
-      isFavoriteLocal ? 'fa-solid' : 'fa-regular',
-      'fa-star',
-    ],
-    { 'data-id': initialData.imdbID }
-  );
+  const favElement = utilities.createElementExt('i', ['card__fav', 'fav__icon', isFavoriteLocal ? 'fa-solid' : 'fa-regular', 'fa-star'], { 'data-id': initialData.imdbID });
 
   const detailsElement = utilities.createElementExt('div', 'card__details', {
     'data-id': initialData.imdbID,
@@ -74,30 +39,15 @@ const card = function (
 
   textContentElement.append(titleElement, yearElement, typeElement);
 
-  const interactiveIconsElement = utilities.createElementExt(
-    'div',
-    'card__interactive-icons'
-  );
+  const interactiveIconsElement = utilities.createElementExt('div', 'card__interactive-icons');
   interactiveIconsElement.append(favElement);
 
-  const cardElement = utilities.createElementExt(
-    'div',
-    ['card', 'card--movie'],
-    { 'data-id': initialData.imdbID }
-  );
-  cardElement.append(
-    pictureElement,
-    textContentElement,
-    detailsElement,
-    interactiveIconsElement
-  );
+  const cardElement = utilities.createElementExt('div', ['card', 'card--movie'], { 'data-id': initialData.imdbID });
+  cardElement.append(pictureElement, textContentElement, detailsElement, interactiveIconsElement);
 
   const collapsePhase1 = async () => {
     cardElement.classList.remove('card--expanded');
-    utilities.smoothRemove(
-      interactiveIconsElement,
-      interactiveIconsElement.querySelector('.card__collapse-button')
-    );
+    utilities.smoothRemove(interactiveIconsElement, interactiveIconsElement.querySelector('.card__collapse-button'));
     utilities.clearChildren(cardElement.querySelector('.card__details'));
   };
 
@@ -111,6 +61,7 @@ const card = function (
         'fa-down-left-and-up-right-to-center',
       ])
     );
+    utilities.scrollIntoViewIfNeeded(cardElement);
     collapseBtnElement.addEventListener('click', collapse, { once: true });
   };
 

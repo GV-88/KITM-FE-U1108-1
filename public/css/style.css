@@ -393,6 +393,7 @@ body {
   -o-object-fit: cover;
      object-fit: cover;
   height: 100%;
+  transition: cubic-bezier(0.21, 0.1, 0, 1) 2000ms;
 }
 .card--movie:not(.card--expanded) .card__content {
   position: absolute;
@@ -433,6 +434,9 @@ body {
 .card--movie:not(.card--expanded):hover .card__title {
   color: var(--color-text-important);
 }
+.card--movie:not(.card--expanded):hover .card__picture {
+  transform: scale(1.0625);
+}
 
 .results__page-summary {
   margin: 1em;
@@ -472,7 +476,7 @@ body > .container {
   grid-row: 2;
   overflow-y: hidden;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(calc(var(--size-card-min-width) + 12px), auto));
+  grid-template-columns: repeat(auto-fill, minmax(calc(var(--size-card-min-width) + 25px), auto));
 }
 body > .container:not(body > .container--has-sidebar) > main {
   grid-column: 1/-1;

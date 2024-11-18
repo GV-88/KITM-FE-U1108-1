@@ -57,6 +57,17 @@ const utilities = {
       element.classList.replace('fa-solid', 'fa-regular');
     }
   },
+
+  /**
+   * a primitive implementation of non-standard https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoViewIfNeeded
+   * @param {*} element
+   */
+  scrollIntoViewIfNeeded: function (element) {
+    const viewport = window.visualViewport;
+    if (element.getBoundingClientRect()['bottom'] > viewport.offsetTop + viewport.height) {
+      element.scrollIntoView(false);
+    }
+  },
 };
 
 export default utilities;
